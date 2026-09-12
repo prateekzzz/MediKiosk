@@ -1,0 +1,253 @@
+/* MediKiosk Custom Styles */
+
+/* Main container */
+.main {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* Kiosk header */
+.kiosk-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px;
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.kiosk-header h1 {
+    font-size: 2.5em;
+    margin: 0;
+    font-weight: 700;
+}
+
+.kiosk-header p {
+    font-size: 1.1em;
+    opacity: 0.9;
+    margin-top: 10px;
+}
+
+/* Big buttons for kiosk */
+.kiosk-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 25px 40px;
+    font-size: 1.3em;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 100px;
+    width: 100%;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.kiosk-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+/* Complaint cards */
+.complaint-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.complaint-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.complaint-icon {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
+.complaint-text {
+    font-size: 1em;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Voice button */
+.voice-button {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+    padding: 30px;
+    font-size: 1.5em;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 150px;
+    height: 150px;
+    margin: 20px auto;
+    display: block;
+    box-shadow: 0 10px 30px rgba(245, 87, 108, 0.5);
+    transition: all 0.3s ease;
+}
+
+.voice-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(245, 87, 108, 0.7);
+}
+
+.voice-button.recording {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(245, 87, 108, 0.7); }
+    70% { box-shadow: 0 0 0 30px rgba(245, 87, 108, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 87, 108, 0); }
+}
+
+/* Progress steps */
+.progress-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 30px 0;
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.progress-step {
+    text-align: center;
+    flex: 1;
+    position: relative;
+}
+
+.progress-step.active .step-circle {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: scale(1.2);
+}
+
+.progress-step.completed .step-circle {
+    background: #4caf50;
+    color: white;
+}
+
+.step-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    font-weight: bold;
+    font-size: 1.2em;
+    transition: all 0.3s ease;
+}
+
+.step-label {
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Summary card */
+.summary-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-left: 5px solid #667eea;
+}
+
+.summary-card h3 {
+    color: #667eea;
+    margin-top: 0;
+}
+
+/* Red flag alert */
+.red-flag {
+    background: #ffebee;
+    border-left: 5px solid #f44336;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Success message */
+.success-box {
+    background: #e8f5e9;
+    border-left: 5px solid #4caf50;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+/* Warning message */
+.warning-box {
+    background: #fff3e0;
+    border-left: 5px solid #ff9800;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+/* Token display */
+.token-display {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    margin: 20px 0;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.token-number {
+    font-size: 3em;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin: 10px 0;
+}
+
+/* Large input fields */
+.stTextInput input {
+    font-size: 1.2em !important;
+    padding: 15px !important;
+    border-radius: 10px !important;
+}
+
+.stTextArea textarea {
+    font-size: 1.1em !important;
+    padding: 15px !important;
+    border-radius: 10px !important;
+}
+
+/* Hide Streamlit branding */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .kiosk-header h1 { font-size: 1.8em; }
+    .voice-button { width: 120px; height: 120px; font-size: 1.2em; }
+    .step-circle { width: 40px; height: 40px; font-size: 1em; }
+}
