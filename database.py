@@ -5,12 +5,12 @@ from typing import Dict, List, Optional
 
 DB_PATH = "medikiosk.db"
 
+
 def init_database():
     """Initialize database with required tables"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    
-    # Patients table
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS patients (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,8 +23,7 @@ def init_database():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
-    
-    # Consultations table
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS consultations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,8 +46,7 @@ def init_database():
             FOREIGN KEY (patient_id) REFERENCES patients (id)
         )
     """)
-    
-    # Documents table
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS documents (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,15 +59,16 @@ def init_database():
             FOREIGN KEY (consultation_id) REFERENCES consultations (id)
         )
     """)
-    
+
     conn.commit()
     conn.close()
+
 
 def save_patient(patient_data: Dict) -> int:
     """Save patient and return ID"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    
+
     try:
         cursor.execute("""
             INSERT INTO patients (abha_id, name, age, gender, phone, language)
@@ -82,29 +81,39 @@ def save_patient(patient_data: Dict) -> int:
             patient_data.get('phone'),
             patient_data.get('language')
         ))
+
         patient_id = cursor.lastrowid
         conn.commit()
         return patient_id
+
     except sqlite3.IntegrityError:
-        # Patient exists, get their ID
-        cursor.execute("SELECT id FROM patients WHERE abha_id = ?", 
-                      (patient_data.get('abha_id'),))
+        cursor.execute(
+            "SELECT id FROM patients WHERE abha_id = ?",
+            (patient_data.get('abha_id'),)
+        )
+
         result = cursor.fetchone()
         return result[0] if result else None
+
     finally:
         conn.close()
+
 
 def save_consultation(patient_id: int, data: Dict) -> str:
     """Save consultation and return token number"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    
-    # Generate token number
+
     today = datetime.now().strftime("%Y%m%d")
-    cursor.execute("SELECT COUNT(*) FROM consultations WHERE DATE(created_at) = DATE('now')")
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM consultations "
+        "WHERE DATE(created_at) = DATE('now')"
+    )
+
     count = cursor.fetchone()[0] + 1
     token_number = f"MK{today}{count:04d}"
-    
+
     cursor.execute("""
         INSERT INTO consultations (
             patient_id, token_number, chief_complaint, duration, severity,
@@ -127,17 +136,19 @@ def save_consultation(patient_id: int, data: Dict) -> str:
         json.dumps(data.get('documents', [])),
         json.dumps(data.get('fhir_bundle', {}))
     ))
-    
+
     conn.commit()
     conn.close()
+
     return token_number
+
 
 def get_all_consultations(limit: int = 50) -> List[Dict]:
     """Get recent consultations"""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    
+
     cursor.execute("""
         SELECT c.*, p.name, p.age, p.gender, p.abha_id
         FROM consultations c
@@ -145,67 +156,85 @@ def get_all_consultations(limit: int = 50) -> List[Dict]:
         ORDER BY c.created_at DESC
         LIMIT ?
     """, (limit,))
-    
+
     rows = [dict(row) for row in cursor.fetchall()]
+
     conn.close()
     return rows
+
 
 def get_consultation_by_token(token: str) -> Optional[Dict]:
     """Get consultation by token number"""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    
+
     cursor.execute("""
         SELECT c.*, p.name, p.age, p.gender, p.abha_id
         FROM consultations c
         JOIN patients p ON c.patient_id = p.id
         WHERE c.token_number = ?
     """, (token,))
-    
+
     row = cursor.fetchone()
+
     conn.close()
+
     return dict(row) if row else None
+
 
 def get_stats() -> Dict:
     """Get dashboard statistics"""
     conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    
+
     stats = {}
-    
-    # Total patients
+
     cursor.execute("SELECT COUNT(*) FROM patients")
     stats['total_patients'] = cursor.fetchone()[0]
-    
-    # Today's consultations
-    cursor.execute("SELECT COUNT(*) FROM consultations WHERE DATE(created_at) = DATE('now')")
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM consultations "
+        "WHERE DATE(created_at) = DATE('now')"
+    )
     stats['today_consultations'] = cursor.fetchone()[0]
-    
-    # Red flag cases
-    cursor.execute("SELECT COUNT(*) FROM consultations WHERE risk_assessment LIKE '%HIGH%' OR risk_assessment LIKE '%CRITICAL%'")
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM consultations "
+        "WHERE risk_assessment LIKE '%HIGH%' "
+        "OR risk_assessment LIKE '%CRITICAL%'"
+    )
     stats['high_risk_cases'] = cursor.fetchone()[0]
-    
-    # Documents processed
+
     cursor.execute("SELECT COUNT(*) FROM documents")
     stats['total_documents'] = cursor.fetchone()[0]
-    
-    # Language distribution
-    cursor.execute("SELECT language, COUNT(*) as count FROM patients GROUP BY language")
-    stats['languages'] = [dict(row) for row in cursor.fetchall()]
-    
-    # Common complaints
+
     cursor.execute("""
-        SELECT chief_complaint, COUNT(*) as count 
-        FROM consultations 
-        GROUP BY chief_complaint 
-        ORDER BY count DESC 
+        SELECT language, COUNT(*) AS count
+        FROM patients
+        GROUP BY language
+    """)
+
+    stats['languages'] = [
+        dict(row) for row in cursor.fetchall()
+    ]
+
+    cursor.execute("""
+        SELECT chief_complaint, COUNT(*) AS count
+        FROM consultations
+        GROUP BY chief_complaint
+        ORDER BY count DESC
         LIMIT 5
     """)
-    stats['top_complaints'] = [dict(row) for row in cursor.fetchall()]
-    
+
+    stats['top_complaints'] = [
+        dict(row) for row in cursor.fetchall()
+    ]
+
     conn.close()
+
     return stats
 
-# Initialize DB on import
+
 init_database()
